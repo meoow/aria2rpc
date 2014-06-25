@@ -8,14 +8,16 @@ import "os"
 import "net/http"
 import "bytes"
 
-var rpc = flag.String("rpc", "http://127.0.0.1:6800/jsonrpc", "Aria2 rpc server address")
+var rpc = flag.String("rpc", "http://127.0.0.1:6800/jsonrpc", "Aria2 RPC server address")
 var cookie = flag.String("cookie", "", "Cookies")
-var dir = flag.String("dir", "", "Saved dest directory")
+var dir = flag.String("dir", "", "Saved dest directory (server side)")
 var out = flag.String("out", "", "Saved output file name")
 var split = flag.Int("split", 15, "One file N connections")
 var server = flag.Int("server", 15, "One server N connections")
 var referer = flag.String("referer", "", "Set referer")
 var ua = flag.String("ua", "Mozilla/5.0 (X11; Linux; rv:5.0) Gecko/5.0 Firefox/5.0", "Set user agent")
+
+// var session = flag.String("session-dir", "", "Directory for session file (server side)")
 
 func main() {
 	flag.Parse()
@@ -29,18 +31,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// fmt.Println(string(jsonreq))
 	addTask(*rpc, jsonreq)
 }
 
 func makeParamsArry(uris []string) []interface{} {
 	output := make([]interface{}, 0, 2)
 	output = append(output, uris)
-	opts := make(map[string]interface{}, 10)
+	opts := make(map[string]interface{}, 11)
 	if *dir != "" {
 		opts["dir"] = *dir
 	}
 	if *out != "" {
 		opts["out"] = *out
+		// if *session != "" {
+		// 	opts["save-session"] = filepath.Join(*session, *out+".session")
+		// }
 	}
 	if *cookie != "" {
 		opts["header"] = []string{fmt.Sprintf("Cookie: %s", *cookie)}
