@@ -12,6 +12,8 @@ var rpc = flag.String("rpc", "http://127.0.0.1:6800/jsonrpc", "Aria2 rpc server 
 var cookie = flag.String("cookie", "", "Cookies")
 var dir = flag.String("dir", "", "Saved dest directory")
 var out = flag.String("out", "", "Saved output file name")
+var split = flag.Int("split", 15, "One file N connections")
+var server = flag.Int("server", 15, "One server N connections")
 
 func main() {
 	flag.Parse()
@@ -20,7 +22,7 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	params := makeParamsArry(URIs, *cookie, *dir, *out)
+	params := makeParamsArry(URIs)
 	jsonreq, err := makeJsonStruct(params)
 	if err != nil {
 		log.Fatal(err)
@@ -28,23 +30,23 @@ func main() {
 	addTask(*rpc, jsonreq)
 }
 
-func makeParamsArry(uris []string, cookie string, dir string, out string) []interface{} {
+func makeParamsArry(uris []string) []interface{} {
 	output := make([]interface{}, 0, 2)
 	output = append(output, uris)
 	opts := make(map[string]interface{}, 9)
-	if dir != "" {
-		opts["dir"] = dir
+	if *dir != "" {
+		opts["dir"] = *dir
 	}
-	if out != "" {
-		opts["out"] = out
+	if *out != "" {
+		opts["out"] = *out
 	}
-	if cookie != "" {
-		opts["header"] = []string{fmt.Sprintf("Cookie: %s", cookie)}
+	if *cookie != "" {
+		opts["header"] = []string{fmt.Sprintf("Cookie: %s", *cookie)}
 	}
 	opts["continue"] = "true"
-	opts["max-connection-per-server"] = "15"
-	opts["split"] = "15"
-	opts["min-split-size"] = "10M"
+	opts["max-connection-per-server"] = *server
+	opts["split"] = *split
+	opts["min-split-size"] = "5M"
 	output = append(output, opts)
 	return output
 }
