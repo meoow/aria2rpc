@@ -14,6 +14,8 @@ var dir = flag.String("dir", "", "Saved dest directory")
 var out = flag.String("out", "", "Saved output file name")
 var split = flag.Int("split", 15, "One file N connections")
 var server = flag.Int("server", 15, "One server N connections")
+var referer = flag.String("referer", "", "Set referer")
+var ua = flag.String("ua", "Mozilla/5.0 (X11; Linux; rv:5.0) Gecko/5.0 Firefox/5.0", "Set user agent")
 
 func main() {
 	flag.Parse()
@@ -33,7 +35,7 @@ func main() {
 func makeParamsArry(uris []string) []interface{} {
 	output := make([]interface{}, 0, 2)
 	output = append(output, uris)
-	opts := make(map[string]interface{}, 9)
+	opts := make(map[string]interface{}, 10)
 	if *dir != "" {
 		opts["dir"] = *dir
 	}
@@ -43,10 +45,14 @@ func makeParamsArry(uris []string) []interface{} {
 	if *cookie != "" {
 		opts["header"] = []string{fmt.Sprintf("Cookie: %s", *cookie)}
 	}
+	if *referer != "" {
+		opts["referer"] = *referer
+	}
 	opts["continue"] = "true"
 	opts["max-connection-per-server"] = *server
 	opts["split"] = *split
 	opts["min-split-size"] = "5M"
+	opts["user-agent"] = *ua
 	output = append(output, opts)
 	return output
 }
