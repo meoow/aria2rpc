@@ -2,4 +2,5 @@
 !.gitignore
 !*.go
 !*.md
+!*.py
 !example.png
