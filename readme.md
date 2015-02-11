@@ -1,7 +1,10 @@
 # Add Downloading Tasks through Aria2 RPC
 
+
 A CLI tool for adding downloading tasks to Aria2 through RPC.  
 Useful for **Firefox** extensions like **Flashgot** who can customize download utilities.
+
+Implemented in both **Go** and **Python**, choose which you like.
 
 ![Example](example.png)
 
