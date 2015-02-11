@@ -5,6 +5,7 @@ A CLI tool for adding downloading tasks to Aria2 through RPC.
 Useful for **Firefox** extensions like **Flashgot** who can customize download utilities.
 
 Implemented in both **Go** and **Python**, choose which you like.
+Note that aria2 comes with its own script(at doc/xmlrpc/aria2rpc under the source file tree) which implemented the full XML-RPC APIs in python, you might check on that if you need more than just adding download links.
 
 ![Example](example.png)
 
