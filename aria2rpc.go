@@ -1,30 +1,42 @@
 package main
 
-import "encoding/json"
-import "fmt"
-import "flag"
-import "log"
-import "os"
-import "net/http"
-import "bytes"
-import "io/ioutil"
+import (
+	"bytes"
+	"encoding/json"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"path"
+)
 
 var rpc = flag.String("rpc", "http://127.0.0.1:6800/jsonrpc", "Aria2 RPC server address")
-var cookie = flag.String("cookie", "", "Cookies")
+var cookie = flag.String("cookie", "", "set cookies in HTTP header")
 var dir = flag.String("dir", "", "Saved dest directory (server side)")
 var out = flag.String("out", "", "Saved output file name")
 var split = flag.Int("split", 15, "One file N connections")
 var server = flag.Int("server", 15, "One server N connections")
 var referer = flag.String("referer", "", "Set referer")
 var secret = flag.String("secret", "", "Set token for authorization")
-var user = flag.String("user", "", "[DEPRECATED]Set user name")
-var pw = flag.String("passwd", "", "[DEPRECATED]Set password")
-var ua = flag.String("ua", "Mozilla/5.0 (X11; Linux; rv:5.0) Gecko/5.0 Firefox/5.0", "Set user agent")
+var user = flag.String("user", "", "Set user name[DEPRECATED]")
+var pw = flag.String("passwd", "", "Set password[DEPRECATED]")
+var ua = flag.String("ua", "Mozilla/5.0 (X11; Linux; rv:5.0) Gecko/5.0 Firefox/5.0", "Set user-agent in HTTP header")
+var host = flag.String("host", "", "Set host address in HTTP header")
 
 // var session = flag.String("session-dir", "", "Directory for session file (server side)")
 
-func main() {
+func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr,
+			fmt.Sprintf("%s [options] URLs ...\n", path.Base(os.Args[0])))
+		flag.PrintDefaults()
+	}
 	flag.Parse()
+}
+
+func main() {
 	URIs := flag.Args()
 	if len(URIs) == 0 {
 		flag.PrintDefaults()
@@ -62,9 +74,14 @@ func makeParamsArry(uris []string) []interface{} {
 		// }
 	}
 
+	header := make([]string, 0, 1)
 	if *cookie != "" {
-		opts["header"] = []string{fmt.Sprintf("Cookie: %s", *cookie)}
+		header = append(header, fmt.Sprintf("Cookie: %s", *cookie))
 	}
+	if *host != "" {
+		header = append(header, fmt.Sprintf("Host: %s", *host))
+	}
+	opts["header"] = header
 
 	if *referer != "" {
 		opts["referer"] = *referer
