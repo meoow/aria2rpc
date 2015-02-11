@@ -64,6 +64,6 @@ if not opts.secret and opts.user and opts.passwd:
 jsondict['params'].append(aria2opts)
 
 jsonreq = json.dumps(jsondict)
-print jsonreq
+#print jsonreq
 
 print urllib2.urlopen(opts.rpc, jsonreq).read()
